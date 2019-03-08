@@ -1,0 +1,127 @@
+<div>
+  <p>Google Sheets API Quickstart</p>
+
+  <!--Add buttons to initiate auth sequence and sign out-->
+  <button id="authorize_button" style="display: none;">Authorize</button>
+  <button id="signout_button" style="display: none;">Sign Out</button>
+
+  <pre id="content" style="white-space: pre-wrap;"></pre>
+
+  <script type="text/javascript">
+    // Client ID and API key from the Developer Console
+    var CLIENT_ID = '107556657139905432892';
+    var API_KEY = "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDSRh03gSkESjQ8\n6yWOQ+Yg/FUUGeaeQOOxTj5sQgk/qQTyIff/fWjOzki0OHsUUKaXBdW3jvQLr72q\nZHwDqipy214tV/XizmH+nHpH/ITLktz9Pr1p8rQnN6pkoI6i1gDhf4Pl7hoVgOmz\nqhGqGSP1chIANJ/d3lTjFKG4Iq9XSS07q5w7AcLnAQgJDunpCh6layJ6R64yw6tS\n4OMLBst2TPu9M7PdKQADItnzggHIxvWvL0u5WTGRPSRUVrA68C/yozazLDLVijrd\nnRmmfHJKFy/6wYKHCUQ0KHgBm6EkcNW8IUOuL3Ohptk2OYXao01ujix3F4+5JmS2\nY6AFI/81AgMBAAECggEAIrA9Zqgwl4wURQ53whnyb3OhJ3FEacwDo/7n7l0QgIeG\nENnIu0W5khBWzyBYMZhCezyTrrXvDbR+wgrUqJgca5lD1pAhuLpaUTIIPDLsx1ah\njUeZ4M4QqT2WJwaTsUpDl++81yQp+m0rYJ/ITTrbg0S/snf7/ZKNh26iZSmXqnrT\n1axXzjRAcFkuKKvK8WxMSSWK85kGhb3Lm99XwXpV1teku0ntKyvAi5mOj3LOQdzs\nt65WD0L6g83OLy3NwASLv/7n4gQT25oXTIZPVYPdTxS1huMgwSbeOvUyfflt/o6T\nQzDPw36j+lVpXhbN/bVRW8KB+WvUkWGdeUXvQIasEQKBgQDxr0+Sf4dOY525sv8O\nlKj8KSiwNEyB84KXwbtNlXeE2kyOocqJSPUEDg1qyXlCIT94gImrw3wtikEcQtyH\nGvB+rKwnUiGP7lsyEOh43nP+KAbhrxBlyVlQ7xMhx0rsIZ8giqdUXsOjsr8jHHT6\nqKxw/m79h7A4dPMJu5UIGykGqQKBgQDeuoQ7lhaxu0o9/V0LwkP+TlPM5kLqcziR\nS7j9wWBEObl4y0RoDsziCG037BIbzp49+1ij76KPD4lkc0UHHXVMFRC39b5PzJUI\nJU7TYu7ZenF3zUHCxJYw3JqNnpt8B29Q6599buFaWLD/VpT1vHnlciA1MycHxc/0\n3m41oyjnrQKBgQCdS0jRgrhwFztG6a1AMxaMDsmRbGhCx1Y+KHMbumRwDZd32Oq1\nUMtOGUs4LeoCVRs29QkkxfSiuvFHUGiwcaMF/qGIcdawEyQ9QG3chIMfbbOU3Fgi\nttmvZ/meqVMkvXkQN81Rht9zQdlOI64qmO6qF53q2Y2iINMwiWokPXEFCQKBgA7M\n8CqRf7KR0o4p/vvgDeqhQ9pS1tGDlJe7I3DhX8dI2rVXNJWBnkXK748OxelJIqTV\nxf8m1nORQb0GF+kwIPJMWA8RanMdEi43ZHSRl3OmOlIOtrb9n0lh73dHuedVCyWi\ncrfAHYOGb0SYeU+XFbaUjeVbH9XZZEdOXJ592CMFAoGBALboruJpTn+6S6u+6GT4\nYcz7Pz9WsNOX/zdqY8VNQZmcNGPynmQvsndYvGC06mRHyypjq8KH5kfAqfUxIp1B\nvCvQE0OhlTKUq+HqCBkGuAdypB6pEzX8+8CrT/hybI1iMwOZlciPkDiq2KiZvc+J\nOLXYLd9OaWPklgvWhpMXC2k2\n-----END PRIVATE KEY-----\n";
+
+    // Array of API discovery doc URLs for APIs used by the quickstart
+    var DISCOVERY_DOCS = ["https://sheets.googleapis.com/$discovery/rest?version=v4"];
+
+    // Authorization scopes required by the API; multiple scopes can be
+    // included, separated by spaces.
+    var SCOPES = "https://www.googleapis.com/auth/spreadsheets.readonly";
+
+    var authorizeButton = document.getElementById('authorize_button');
+    var signoutButton = document.getElementById('signout_button');
+
+    /**
+     *  On load, called to load the auth2 library and API client library.
+     */
+    function handleClientLoad() {
+      gapi.load('client:auth2', initClient);
+    }
+
+    /**
+     *  Initializes the API client library and sets up sign-in state
+     *  listeners.
+     */
+    function initClient() {
+      gapi.client.init({
+        apiKey: API_KEY,
+        clientId: CLIENT_ID,
+        discoveryDocs: DISCOVERY_DOCS,
+        scope: SCOPES
+      }).then(function () {
+        // Listen for sign-in state changes.
+        gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
+
+        // Handle the initial sign-in state.
+        updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+        authorizeButton.onclick = handleAuthClick;
+        signoutButton.onclick = handleSignoutClick;
+      }, function(error) {
+        appendPre(JSON.stringify(error, null, 2));
+      });
+    }
+
+    /**
+     *  Called when the signed in status changes, to update the UI
+     *  appropriately. After a sign-in, the API is called.
+     */
+    function updateSigninStatus(isSignedIn) {
+      if (isSignedIn) {
+        authorizeButton.style.display = 'none';
+        signoutButton.style.display = 'block';
+        listMajors();
+      } else {
+        authorizeButton.style.display = 'block';
+        signoutButton.style.display = 'none';
+      }
+    }
+
+    /**
+     *  Sign in the user upon button click.
+     */
+    function handleAuthClick(event) {
+      gapi.auth2.getAuthInstance().signIn();
+    }
+
+    /**
+     *  Sign out the user upon button click.
+     */
+    function handleSignoutClick(event) {
+      gapi.auth2.getAuthInstance().signOut();
+    }
+
+    /**
+     * Append a pre element to the body containing the given message
+     * as its text node. Used to display the results of the API call.
+     *
+     * @param {string} message Text to be placed in pre element.
+     */
+    function appendPre(message) {
+      var pre = document.getElementById('content');
+      var textContent = document.createTextNode(message + '\n');
+      pre.appendChild(textContent);
+    }
+
+    /**
+     * Print the names and majors of students in a sample spreadsheet:
+     * https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
+     */
+    function listMajors() {
+      gapi.client.sheets.spreadsheets.values.get({
+        spreadsheetId: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
+        range: 'Class Data!A2:E',
+      }).then(function(response) {
+        var range = response.result;
+        if (range.values.length > 0) {
+          appendPre('Name, Major:');
+          for (i = 0; i < range.values.length; i++) {
+            var row = range.values[i];
+            // Print columns A and E, which correspond to indices 0 and 4.
+            appendPre(row[0] + ', ' + row[4]);
+          }
+        } else {
+          appendPre('No data found.');
+        }
+      }, function(response) {
+        appendPre('Error: ' + response.result.error.message);
+      });
+    }
+
+  </script>
+
+  <script async defer src="https://apis.google.com/js/api.js"
+    onload="this.onload=function(){};handleClientLoad()"
+    onreadystatechange="if (this.readyState === 'complete') this.onload()">
+  </script>
+</div>
