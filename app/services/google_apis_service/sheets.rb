@@ -2,10 +2,10 @@ require 'google/apis/sheets_v4'
 
 module GoogleApisService
   class Sheets
+    attr_accessor :service
+
     SCOPE = Google::Apis::SheetsV4::AUTH_SPREADSHEETS
     #SCOPE = Google::Apis::SheetsV4::AUTH_SPREADSHEETS_READONLY
-
-    attr_accessor :service
 
     def initialize
       @service = Google::Apis::SheetsV4::SheetsService.new
@@ -13,4 +13,3 @@ module GoogleApisService
     end
   end
 end
-
