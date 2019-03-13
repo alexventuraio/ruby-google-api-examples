@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   get 'welcome/index'
   get 'welcome/sheets'
-  get 'welcome/demo_net'
+  get 'welcome/server_side'
   get 'welcome/demo_link'
 
   root to: 'welcome#index'
