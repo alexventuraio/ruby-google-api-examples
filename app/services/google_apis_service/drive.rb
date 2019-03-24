@@ -13,6 +13,7 @@ module GoogleApisService
     end
 
     def download_file(file_id)
+      # https://www.rubydoc.info/github/google/google-api-ruby-client/Google/Apis/DriveV3/DriveService#export_file-instance_method
       content = service.export_file(
         file_id,
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -21,6 +22,7 @@ module GoogleApisService
     end
 
     def list_files
+      # https://www.rubydoc.info/github/google/google-api-ruby-client/Google/Apis/DriveV3/DriveService#list_files-instance_method
       # List the 10 most recently modified files.
       final_list = []
       response = service.list_files(page_size: 10,
@@ -37,6 +39,7 @@ module GoogleApisService
     end
 
     def delete_file(file_id)
+      # https://www.rubydoc.info/github/google/google-api-ruby-client/Google/Apis/DriveV3/DriveService#delete_file-instance_method
       # Going this way:
       # When the request was success 'result' is equals to '' and 'err' is nil
       # When the request had failed then 'err' is equals to object and 'result' is nil
