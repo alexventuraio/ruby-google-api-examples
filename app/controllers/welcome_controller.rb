@@ -11,6 +11,24 @@ class WelcomeController < ApplicationController
     end
   end
 
+  def drive
+    drive_service = GoogleApisService::Drive.new
+    @data = drive_service.list_files
+    #drive_service.download_file
+  end
+
+  def download_file
+    file_id = params[:file_id] || ''
+
+    drive_service = GoogleApisService::Drive.new
+    file_name = drive_service.download_file(file_id)
+
+    #send_data "tmp/#{file_id}.xlsx", type: "application/xlsx", filename: "#{file_id}.xlsx"
+    send_file "tmp/#{file_id}.xlsx", type: "application/xlsx", filename: "#{file_id}.xlsx", disposition: 'inline'
+
+    #redirect_to welcome_drive_path
+  end
+
   def server_side
     auth = "Bearer 'ya29.c.DmybJXXZzegGsv0Q3N-1P1DkHWOBE9lzz4WA9A-sy9fXTw'"
     url = URI.parse('https://docs.google.com/spreadsheets/d/e/2PACX-1vTWCKT5lY4Vp8K6lsT4l5UurXaDb6kV6SkaSW9OBMN58N1GTVgaagnI9OVOH6vGjOh01eZcpgmY4fH4/pubhtml')

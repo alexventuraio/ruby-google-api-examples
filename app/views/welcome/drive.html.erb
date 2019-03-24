@@ -1,0 +1,9 @@
+<h1>Drive</h1>
+
+<ul>
+  <% @data.each do |file| %>
+    <li>
+      <%= file[:name] %> - <%= link_to file[:id], welcome_download_file_path(file_id: file[:id]) %>
+    </li>
+  <% end %>
+</ul>
