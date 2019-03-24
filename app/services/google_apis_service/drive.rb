@@ -14,11 +14,15 @@ module GoogleApisService
 
     def download_file(file_id)
       # https://www.rubydoc.info/github/google/google-api-ruby-client/Google/Apis/DriveV3/DriveService#export_file-instance_method
+      file_name = get_file_name(file_id)
+
       content = service.export_file(
         file_id,
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        download_dest: "tmp/#{file_id}.xlsx"
+        download_dest: "tmp/#{file_name}.xlsx"
       )
+
+      file_name
     end
 
     def list_files
@@ -55,6 +59,16 @@ module GoogleApisService
     rescue Google::Apis::ClientError => error
       puts "💭 " * 50
       pp(error.message)
+    end
+
+    def get_file_name(file_id)
+      begin
+        service.get_file(file_id, fields: 'name').try(:name)
+      rescue Google::Apis::ClientError
+        raise "Could not find file on drive with ID: #{file_id}"
+      rescue => e
+        raise "Error: #{e.to_s}"
+      end
     end
   end
 end

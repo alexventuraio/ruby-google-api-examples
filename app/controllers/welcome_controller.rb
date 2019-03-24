@@ -23,8 +23,10 @@ class WelcomeController < ApplicationController
     drive_service = GoogleApisService::Drive.new
     file_name = drive_service.download_file(file_id)
 
-    #send_data "tmp/#{file_id}.xlsx", type: "application/xlsx", filename: "#{file_id}.xlsx"
-    send_file "tmp/#{file_id}.xlsx", type: "application/xlsx", filename: "#{file_id}.xlsx", disposition: 'inline'
+    if file_name
+      send_file "tmp/#{file_name}.xlsx",
+        type: "application/xlsx", filename: "#{file_name}.xlsx", disposition: 'inline'
+    end
 
     #redirect_to welcome_drive_path
   end
