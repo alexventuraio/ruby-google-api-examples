@@ -1,3 +1,6 @@
+#https://developers.google.com/identity/protocols/OAuth2#serviceaccount
+#https://developers.google.com/identity/protocols/OAuth2ServiceAccount
+
 module GoogleApisService
   module Auth
     class << self
