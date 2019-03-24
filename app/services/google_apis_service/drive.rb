@@ -35,5 +35,23 @@ module GoogleApisService
 
       final_list
     end
+
+    def delete_file(file_id)
+      # Going this way:
+      # When the request was success 'result' is equals to '' and 'err' is nil
+      # When the request had failed then 'err' is equals to object and 'result' is nil
+      # You can read the 'err.status_code' and 'err.message' to return
+      #service.delete_file(file_id) do |result, err|
+        #data = result || err
+      #end
+
+      # In this way you only get a '' if the request was sucessfull otherwise we need
+      # to handle the exception to have acccess to the 'error' object
+      content = service.delete_file(file_id)
+
+    rescue Google::Apis::ClientError => error
+      puts "💭 " * 50
+      pp(error.message)
+    end
   end
 end
