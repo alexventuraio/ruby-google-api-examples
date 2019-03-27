@@ -30,12 +30,12 @@ module GoogleApisService
       # List the 10 most recently modified files.
       final_list = []
       response = service.list_files(page_size: 10,
-                                    fields: 'nextPageToken, files(id, name)')
+                                    fields: 'nextPageToken, files(id, name, thumbnailLink, webViewLink)')
       puts 'Files:'
       puts 'No files found' if response.files.empty?
 
       response.files.each do |file|
-        puts "#{file.name} (#{file.id})"
+        puts "#{file.name} (#{file.id}) [#{file.thumbnail_link}] [#{file.web_view_link}]"
         final_list << { name: file.name, id: file.id }
       end
 
@@ -68,6 +68,17 @@ module GoogleApisService
         raise "Could not find file on drive with ID: #{file_id}"
       rescue => e
         raise "Error: #{e.to_s}"
+      end
+    end
+
+    def get_slide_thumbnail_url(presentation_id, thumbnail_size='LARGE')
+      begin
+        @thumbnail_url ||= service.get_presentation_page_thumbnail(
+          presentation_id,
+          thumbnail_properties_thumbnail_size: thumbnail_size
+        ).content_url
+      rescue StandardError => e
+        raise e.to_s
       end
     end
   end
